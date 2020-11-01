@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>{% block title %}{% endblock %}</title>
+<script>
+function connectCheckboxes(checkboxes) {
+	var prev = null;
+
+	function click(i, ev) {
+		if (ev.shiftKey && prev != null) {
+			for (var j = Math.min(prev, i); j <= Math.max(prev, i); ++j) {
+				if (j !== i) checkboxes[j].checked = ev.target.checked;
+			}
+		}
+		prev = i;
+	}
+
+	for (var i = 0; i < checkboxes.length; ++i) {
+		checkboxes[i].addEventListener("click", click.bind(null, i), false);
+	}
+}
+
+function connectCheckboxesInit() {
+	connectCheckboxes([].slice.call(document.querySelectorAll("input[type=checkbox]")));
+}
+
+window.addEventListener("load", connectCheckboxesInit, false);
+</script>
+<body>
+{% block content %}{% endblock %}

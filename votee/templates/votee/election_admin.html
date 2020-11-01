@@ -1,0 +1,28 @@
+{% extends "votee/base.html" %}
+{% block title %}{{ election }}{% endblock %}
+{% block content %}
+<h1>Edit election: {{ election }}</h1>
+<form method="post">{% csrf_token %}
+    {{ form.errors }}
+    <p>{{ form.name }}</p>
+<table>
+<tbody>
+    {% for order, delete, name, votes, url in rows %}
+    <tr>
+        <td>{{ delete }}</td>
+        <td>{{ order }}</td>
+        <td>{{ name }}</td>
+        <td>{{ votes }}</td>
+        <td><a href="{{ url }}">&rarr;</a></td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+    <p>Add poll(s):</p>
+    <p>{{ form.new_polls }}</p>
+<input type="submit" />
+<p>Export poll option list (copy-and-paste):</p>
+<p><textarea>{{ poll_export }}</textarea></p>
+</form>
+
+{% endblock %}

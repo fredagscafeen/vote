@@ -1,0 +1,14 @@
+{% extends "votee/base.html" %}
+{% block title %}Create new election{% endblock %}
+{% block content %}
+<h1>Create new election</h1>
+<form method="post">{% csrf_token %}
+    <p>Name: {{ form.name }}</p>
+
+    <p>(Optional) Polls:</p>
+    <p>{{ form.polls }}</p>
+    <p><small>Start each poll on a line of its own, followed by the poll options indented by at least one space, one per line.</small></p>
+
+    <input type="submit" value="Create" />
+</form>
+{% endblock %}

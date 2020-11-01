@@ -1,0 +1,10 @@
+{% extends "votee/base.html" %}
+{% block title %}{{ election }}{% endblock %}
+{% block content %}
+<h1>{{ election }}</h1>
+<ul>
+	{% for o in election.polls %}
+	<li><a href="{{ o.get_absolute_url }}">{{ o }}</a></li>
+	{% endfor %}
+</ul>
+{% endblock %}

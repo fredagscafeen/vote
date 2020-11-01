@@ -1,0 +1,94 @@
+{% extends "votee/base.html" %}
+{% block title %}{{ poll.election }}: {{ poll }}{% endblock %}
+{% block content %}
+<h1>{{ poll.election }}</h1>
+<h2>{{ poll }}</h2>
+
+{% if just_voted %}
+<p>Your vote has been received. Thanks for voting!</p>
+{% endif %}
+
+{% if ballot_index == None %}
+{% if key_error %}
+<p>There is an error with your ballot key.</p>
+{% endif %}
+<ul>
+    {% for o in options %}
+    {% if o.name %}
+    <li>{{ o.name }}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% else %}
+<p>Ballot number {{ ballot_index }}</p>
+
+{% if ac and not already_voted %}
+<script>
+var pageLoad = new Date().getTime() / 1000;
+function init() {
+    var f = document.getElementById("poll");
+    var countdown = document.getElementById("countdown");
+    var nextVote = +f.getAttribute("data-next-vote");
+    var votingInterval = +f.getAttribute("data-voting-interval");
+    var submitted = false;
+    if (votingInterval === 0 || votingInterval !== votingInterval) return;
+    countdown.style.width = "0px";
+    countdown.style.height = "20px";
+    countdown.style.backgroundColor = "gray";
+
+    function wait() {
+        var now = new Date().getTime() / 1000;
+        var t = pageLoad + nextVote - now;
+        if (t > 0) return t;
+        return votingInterval-(-t % votingInterval);
+    }
+
+    function update() {
+        var w = submitted ? 0 : wait();
+        if (w <= votingInterval)
+            countdown.style.width = (((w * 100) / votingInterval) | 0) + "px";
+        else
+            countdown.style.width = ((((w - votingInterval) * 100) / nextVote + 100) | 0) + "px";
+        window.requestAnimationFrame(update);
+    }
+
+    window.requestAnimationFrame(update);
+
+    function submit(ev) {
+        var w = setTimeout(function () {
+            submitted = true;
+            f.submit();
+        }, wait() * 1000);
+        ev.preventDefault();
+        ev.stopPropagation();
+        countdown.style.backgroundColor = "green";
+        return false;
+    }
+    f.addEventListener("submit", submit, false);
+}
+window.addEventListener("load", init, false);
+</script>
+<form method="post" id="poll" data-next-vote="{{ next_vote }}" data-voting-interval="{{ voting_interval }}">{% csrf_token %}
+    <div id="countdown"></div>
+    {{ form.as_p }}
+    <input type="submit" value="Vote" />
+</form>
+{% else %}
+{% if already_voted %}
+<p>You have already voted in this poll.</p>
+{% else %}
+<p>Sorry, but this poll is not open.
+This means that either you are too early or too late to vote,
+or there is a technical problem.</p>
+{% endif %}
+<ul>
+    {% for o in options %}
+    {% if o.name %}
+    <li>{{ o.name }}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
+{% endif %}
+
+{% endblock %}

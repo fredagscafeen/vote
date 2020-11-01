@@ -1,0 +1,48 @@
+{% extends "votee/base.html" %}
+{% block title %}{{ poll.election }}: {{ poll }}{% endblock %}
+{% block content %}
+<h1>{{ poll.election }}</h1>
+<h2>Edit poll: {{ poll }}</h2>
+<form method="post">{% csrf_token %}
+    {{ form.errors }}
+    <p>{{ form.name }}</p>
+    <p>Votes per ballot: {{ form.votes }}</p>
+    <p>Accepting votes: {{ form.ac }}</p>
+    <p>Voting start: {{ voting_start }} {{ first_vote }}</p>
+    <p>Start voting in [s]: {{ form.next_vote }}</p>
+    <p>Collect votes every [s]: {{ form.voting_interval }}</p>
+    <p>Ballots cast: {{ used_ballots }}</p>
+    <p>Votes cast: {{ vote_count }}</p>
+    {% if show_results %}
+    <p>Results:</p>
+    <ul>
+        {% for o in options %}
+        <li>{{ o }}: {{ o.count }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p><a href="{{ show_results_link }}">Show results</a></p>
+    {% endif %}
+    <p><label>Allow blank votes: {{ form.blank }}</label></p>
+<table>
+<tbody>
+    {% for order, delete, name in rows %}
+    <tr>
+        <td>{{ delete }}</td>
+        <td>{{ order }}</td>
+        <td>{{ name }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+<p>Add poll option(s):</p>
+<p>{{ form.new_options }}</p>
+<p>Number of ballots: {{ form.ballots }}</p>
+<input type="submit" />
+</form>
+
+{% for b in ballots %}
+<div><a href="{{ b }}">{{ b }}</a></div>
+{% endfor %}
+
+{% endblock %}
