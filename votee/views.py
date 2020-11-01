@@ -271,6 +271,8 @@ class PollDetail(FormView, SinglePollMixin):
             next_vote = s["voting_start"] - time.time()
             if next_vote < 0:
                 next_vote %= voting_interval
+        else:
+            next_vote = 0
         context_data.update(
             just_voted=bool(self.request.GET.get("voted")),
             options=self.options,
