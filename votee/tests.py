@@ -10,15 +10,17 @@ class VoteeTests(TestCase):
         )
         admin_key = e.get_admin_key()
         assert e.validate_admin_key(admin_key)
-        assert not e.validate_admin_key(b"abc")
-        assert not e.validate_admin_key(b"0123456789abcdef")
-        assert crypto.urldecode(crypto.urlencode(admin_key)) == admin_key
+        assert not e.validate_admin_key("abc")
+        assert not e.validate_admin_key("0123456789012345678912")
+        assert (
+            crypto.urldecode(crypto.urlencode(b"0123456789abcdef"))
+            == b"0123456789abcdef"
+        )
 
         poll = models.Poll.objects.create(
             election=e,
             name="Test poll",
             slug="test-poll",
-            settings="{}",
         )
         (
             b0,

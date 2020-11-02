@@ -12,6 +12,7 @@ def rand128() -> bytes:
 
 
 def urlencode(key: bytes) -> str:
+    assert isinstance(key, bytes)
     assert len(key) == 16
     encoded = base64.urlsafe_b64encode(key).decode()
     assert encoded.endswith("==")

@@ -58,6 +58,7 @@ class Election(models.Model):
         return votee.crypto.urlencode(votee.crypto.encrypt_int(self.admin_secret, 0))
 
     def validate_admin_key(self, k: str) -> bool:
+        assert isinstance(k, str)
         decoded = votee.crypto.urldecode(k)
         return (
             decoded is not None
