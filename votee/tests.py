@@ -38,6 +38,10 @@ class VoteeTests(TestCase):
         assert poll.validate_ballot(b1) == 1
         assert poll.validate_ballot(b2) is None
 
+        blank = models.PollOption.objects.create(
+            poll=poll,
+            name="(blank)",
+        )
         opt1 = models.PollOption.objects.create(
             poll=poll,
             name="Potatoes",
@@ -54,3 +58,5 @@ class VoteeTests(TestCase):
         assert not models.use_ballot(poll, 1, [opt1])
         assert models.PollOption.objects.get(id=opt1.id).count == 2
         assert models.PollOption.objects.get(id=opt2.id).count == 1
+        assert models.use_ballot(poll, 2, [blank, blank])
+        assert models.PollOption.objects.get(id=blank.id).count == 2

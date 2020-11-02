@@ -200,5 +200,6 @@ def use_ballot(p: Poll, i: int, options: List[PollOption]) -> bool:
     qs = PollOption.objects.filter(id__in=[o.id for o in options])
     with transaction.atomic():
         UsedBallot.objects.create(poll=p, ballot_index=i)
-        qs.update(count=F("count") + 1)
+        for o in options:
+            PollOption.objects.filter(id=o.id).update(count=F("count") + 1)
     return True
