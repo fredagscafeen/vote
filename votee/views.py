@@ -418,14 +418,23 @@ class PollAdmin(FormView, SinglePollMixin):
         form = context_data["form"]
         rows = [[form[k] for k in keys] for o, *keys in self.rows]
         reverse_args = {"election": self.poll.election.slug, "poll": self.poll.slug}
+        admin_key = self.poll.election.get_admin_key()
         url = (
             reverse(
                 "poll_admin",
                 kwargs=reverse_args,
             )
             + "?a="
-            + self.poll.election.get_admin_key()
+            + admin_key
             + "&results=1"
+        )
+        election_url = (
+            reverse(
+                "election_admin",
+                kwargs={"election": reverse_args["election"]},
+            )
+            + "?a="
+            + admin_key
         )
         ballot_url = reverse("poll_detail", kwargs=reverse_args) + "?s="
         ballots = [
@@ -436,6 +445,7 @@ class PollAdmin(FormView, SinglePollMixin):
         vote_count = sum(o.count for o in self.options)
         context_data.update(
             poll=self.poll,
+            election_url=election_url,
             rows=rows,
             options=self.options,
             vote_count=vote_count,

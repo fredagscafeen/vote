@@ -1,7 +1,7 @@
 {% extends "votee/base.html" %}
 {% block title %}{{ poll.election }}: {{ poll }}{% endblock %}
 {% block content %}
-<h1>{{ poll.election }}</h1>
+<h1><a href="{{ election_url }}">&larr;</a> {{ poll.election }}</h1>
 <h2>Edit poll: {{ poll }}</h2>
 <form method="post">{% csrf_token %}
     {{ form.errors }}
