@@ -451,7 +451,7 @@ class PollAdmin(FormView, SinglePollMixin):
         )
         ballot_url = reverse("poll_detail", kwargs=reverse_args) + "?s="
         ballots = [
-            ballot_url + b
+            self.request.build_absolute_uri(ballot_url + b)
             for b in self.poll.get_ballots(0, self.poll.number_of_ballots)
         ]
         used_ballots = models.UsedBallot.objects.filter(poll=self.poll).count()
