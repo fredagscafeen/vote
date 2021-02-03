@@ -3,11 +3,13 @@ import json
 import time
 
 from django import forms
+from django.db import IntegrityError, transaction
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView
+
 from votee import models
 
 
@@ -83,16 +85,21 @@ class ElectionCreate(FormView):
             form.add_error(None, "You must be a superuser to create a new election")
             return self.form_invalid(form)
         polls, options = form.cleaned_data["polls"]
-        e = models.Election.objects.create(
-            name=form.cleaned_data["name"],
-            slug=slugify(form.cleaned_data["name"]),
-        )
-        for p in polls:
-            p.election = e
-            p.save()
-        for o in options:
-            o.poll = o.poll
-            o.save()
+        try:
+            with transaction.atomic():
+                e = models.Election.objects.create(
+                    name=form.cleaned_data["name"],
+                    slug=slugify(form.cleaned_data["name"]),
+                )
+                for p in polls:
+                    p.election = e
+                    p.save()
+                for o in options:
+                    o.poll = o.poll
+                    o.save()
+        except IntegrityError as err:
+            form.add_error(None, err.args[0])
+            return self.form_invalid(form)
         url = (
             reverse("election_admin", kwargs={"election": e.slug})
             + "?a="
@@ -219,13 +226,19 @@ class ElectionAdmin(FormView, SingleElectionMixin):
             p.accepting_votes = False
             p.number_of_ballots = 0
             to_save.append(p)
-        for o in to_delete:
-            o.delete()
-        for o in to_save:
-            o.save()
-        self.election.poll_order = order_slugs
-        self.election.name = form.cleaned_data["name"]
-        self.election.save()
+
+        try:
+            with transaction.atomic():
+                for o in to_delete:
+                    o.delete()
+                for o in to_save:
+                    o.save()
+                self.election.poll_order = order_slugs
+                self.election.name = form.cleaned_data["name"]
+                self.election.save()
+        except IntegrityError as err:
+            form.add_error(None, err.args[0])
+            return self.form_invalid(form)
 
         url = (
             reverse("election_admin", kwargs={"election": self.election.slug})
