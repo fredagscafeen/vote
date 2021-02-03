@@ -27,7 +27,7 @@ class SinglePollMixin(SingleElectionMixin):
             return models.Poll.objects.get(
                 election__slug=self.kwargs["election"], slug=self.kwargs["poll"]
             )
-        except models.models.Poll.DoesNotExist:
+        except models.Poll.DoesNotExist:
             raise Http404
 
 
