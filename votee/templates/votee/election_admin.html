@@ -6,6 +6,15 @@
     {{ form.errors }}
     <p>{{ form.name }}</p>
 <table>
+<thead>
+  <tr>
+    <th>Delete</th>
+    <th>Order</th>
+    <th>Name</th>
+    <th>Votes</th>
+    <th>Link</th>
+  </tr>
+</thead>
 <tbody>
     {% for order, delete, name, votes, url in rows %}
     <tr>

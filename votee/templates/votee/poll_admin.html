@@ -25,6 +25,13 @@
     {% endif %}
     <p><label>Allow blank votes: {{ form.blank }}</label></p>
 <table>
+<thead>
+  <tr>
+    <th>Delete</th>
+    <th>Order</th>
+    <th>Name</th>
+  </tr>
+</thead>
 <tbody>
     {% for order, delete, name in rows %}
     <tr>
