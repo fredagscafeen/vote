@@ -203,7 +203,7 @@ class ElectionAdmin(FormView, SingleElectionMixin):
                 p.votes_per_ballot = form.cleaned_data[k_votes]
                 p.name = form.cleaned_data[k_name]
                 to_save.append(p)
-        order_slugs = [p.slug for _, p in sorted(new_order)]
+        order_slugs = [p.slug for _, p in sorted(new_order, key=lambda x: x[0])]
         for n in form.cleaned_data["new_polls"].splitlines():
             name = n.strip()
             if not name:
@@ -478,7 +478,7 @@ class PollAdmin(FormView, SinglePollMixin):
             if o.name != form.cleaned_data[k_name]:
                 o.name = form.cleaned_data[k_name]
                 to_save.append(o)
-        order = [o for _, o in sorted(new_order)]
+        order = [o for _, o in sorted(new_order, key=lambda x: x[0])]
         for n in form.cleaned_data["new_options"].splitlines():
             name = n.strip()
             if not name:
