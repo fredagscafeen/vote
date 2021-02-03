@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    restart: always
+    networks:
+      - traefik
+      - default
+    volumes:
+      - ./db.sqlite3:/app/db.sqlite3
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fredagscafeen-vote.rule=Host(`vote.fredagscafeen.dk`)
+      - traefik.http.services.fredagscafeen-vote.loadbalancer.server.port=8000
+
+networks:
+  traefik:
+    external: true
