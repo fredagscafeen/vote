@@ -1,3 +1,4 @@
 #!/bin/sh
+./manage.py collectstatic --noinput &&
 ./manage.py migrate --noinput -v 3 &&
 exec python ./manage.py runserver 0.0.0.0:8000
